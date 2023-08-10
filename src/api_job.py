@@ -6,6 +6,7 @@ import os
 
 
 
+
 class APIJob(ABC):
     @abstractmethod
     def __init__(self, profession_name: str, cities: str, page: int = 0) -> None:
@@ -57,28 +58,50 @@ class APISuperJob(APIJob):
 
 class WorkingWithVacancies:
     """ Класс для работы с вакансиями"""
-    def __init__(self, file_json):
-        self.file_json = file_json
-        for i in file_json:
-            #print(i)
-            try:
-                self.name_vacancy = i['name']   # Название вакансии
-                self.url_vacancy = i['url']   # Ссылка на вакансию
-                self.salary_from_vacancy = i['salary']['from']   # Зарплата от
-                self.salary_to_vacancy = i['salary']['to']   # Зарплата до
-                self.requirement_vacancy = i['snippet']['requirement']   # Требования
-                self.responsibility_vacancy = i['snippet']['responsibility']   # Обязанности
-                self.experience_vacancy = i['experience']['name']   # Опыт
+    def __init__(self, data):
+        self.data = data
+        self.all_salary =[]
 
-            except:
-                self.salary_from_vacancy = None
-                self.salary_to_vacancy = None
+        for i in data:
+            #print(i)
+
+            self.name_vacancy = i['name']   # Название вакансии
+            self.url_vacancy = i['url']   # Ссылка на вакансию
+            if i['salary']:
+                self.salary_from_vacancy = i['salary']['from']
+            else:
+                self.salary_from_vacancy = None   # Зарплата от
+            if i['salary']:
+                self.salary_to_vacancy = i['salary']['to']
+            else:
+                self.salary_to_vacancy = None   # Зарплата до
+            self.requirement_vacancy = i['snippet']['requirement']   # Требования
+            self.responsibility_vacancy = i['snippet']['responsibility']   # Обязанности
+            self.experience_vacancy = i['experience']['name']   # Опыт
+
+            self.all_salary.append(self.salary_from_vacancy)
+        print(self.all_salary)
+
+
 
 
     def __repr__(self):
         return f'{self.name_vacancy}\n {self.url_vacancy}\n {self.salary_from_vacancy} - {self.salary_to_vacancy}\n {self.requirement_vacancy}\n {self.responsibility_vacancy}\n {self.experience_vacancy}'
 
     def compare_salary(self):
+        """ Метод сравнения вакансий по ЗП"""
+
+
+        max_salary = max(self.all_salary)
+        print(max_salary)
+
+
+
+class WorkWithJson(WorkingWithVacancies):
+    def __init__(self, date):
+        pass
+        #super().__init__():
+        #print(self.salary_from_vacancy)
 
 
 process = APIHeadHunter('Аналитик', 1, 0)
@@ -86,4 +109,6 @@ file = process.get()
 #print(process.get())
 name_vacancy = WorkingWithVacancies(file)
 print(name_vacancy) # Печатаем Название вакансии
-print(name_vacancy.experience_vacancy) # Печатаем Опыт
+print(name_vacancy.compare_salary())
+#print(name_vacancy.experience_vacancy) # Печатаем Опыт
+print(name_vacancy.compare_salary())
