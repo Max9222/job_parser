@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import requests
 import json
-import time
-import os
+from datetime import datetime
+
 
 
 class APIJob(ABC):
@@ -18,6 +18,9 @@ class APIJob(ABC):
     @abstractmethod
     def get_formatted(self):
         pass
+
+#############
+
 
 class ApiHH(APIJob):
     """ Класс для работы с конкретной платформой HeadHunter"""
@@ -62,6 +65,7 @@ class ApiHH(APIJob):
             self.vacancies.append(dict_aa)
         return self.vacancies
 
+#############
 
 class ApiSuperJob(APIJob):
     """ Класс для работы с конкретной платформой SuperJob"""
@@ -112,7 +116,9 @@ class ApiSuperJob(APIJob):
 
             #formatted_vacancies.append(formatted_vacancy)
         return formatted_vacancies
-##########
+
+#############
+
 
 class Vacancy:
     """ Класс для работы с вакансиями"""
@@ -134,11 +140,12 @@ class Vacancy:
                 'requirement': i['snippet']['requirement'],   # Требования
                 'responsibility': i['snippet']['responsibility'],   # Обязанности
                 'experience': i['experience']['name'],   # Опыт
+                'date': datetime.strptime(i['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y'),
             }
             lis.append(dict_aa)
         return lis
 
-##########
+#############
 
 class Vacancyinit:
     def __init__(self, vacancy):
@@ -155,6 +162,7 @@ class Vacancyinit:
             #self.currency_value = i['currency_value']
             self.employer = i['employer']
             #self.title = i['title']
+
 
     def __str__(self):
         if not self.salary_from and not self.salary_to:
@@ -176,7 +184,8 @@ class Vacancyinit:
 Зарплата: { salary }
 Ссылка: { self.url }
         """
-##########
+#############
+
 
 class AppJson:
 
@@ -192,25 +201,37 @@ class AppJson:
     def read_json(self):
         with open(self.filename, 'r', encoding="utf-8") as infile:
             vacancies = json.load(infile)
-        return [Vacancy(x) for x in vacancies]
+        return vacancies
 
+#############
 
 class Utils:
     """ Утилиты"""
     def __init__(self, data):
         self.data = data
 
-    def len_vacancy(self):
+
+    def len_vacancies(self):
         return len(self.data)
 
-    def filter_vacancies(self, key_filter):
+    def filter_vacancies(self, salary):
         result = []
         for i in self.data:
-            if i['salary_top'] == None:
-                if i['salary_low'] == None:
-                    i['salary_top'] = 0
-                else:
-                    i['salary_top'] = i['salary_low']
-            if i['salary_top'] >= int(key_filter):
-                result.append(i)
+            if i['salary_to'] != None:
+                salary_int = i['salary_to']
+                if salary_int > int(salary):
+                    result.append(i)
         self.data = result
+
+    def sorted(self, key=0):
+        if key == '1':
+            self.data = sorted(self.data, key=lambda x: datetime.strptime(x['date'], '%d %B %Y'), reverse=True)
+            return self.data
+        elif key == '2':
+            self.data = sorted(self.data, key=lambda x: int(x['salary_to']))
+            return self.data
+        elif key == '3':
+            self.data = sorted(self.data, key=lambda x: int(x['salary_to']), reverse=True)
+            return self.data
+
+

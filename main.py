@@ -4,9 +4,8 @@ from src.api_job import ApiHH, AppJson, Vacancyinit, Utils
 
 
 vac_json = []
-#keyword = input(" Какая вакансия?")
+#keyword = input("Какая вакансия?\n")
 keyword = "Python"
-
 
 # Для HH
 hh = ApiHH(keyword)
@@ -19,17 +18,42 @@ list_1 = list_hh # + SuperJob
 app_json = AppJson(keyword, list_1)
 write_json = app_json.write_json()  # Записали
 read_json = app_json.read_json()    # Прочитали
-
+#print(read_json)
 # Утилиты
 utils = Utils(read_json)
-len_list_1 = utils.len_vacancy()  # Считаем кол-во запросса в файле Python.json
+len_list_1 = utils.len_vacancies()  # Считаем кол-во запросса в файле Python.json
 
 if vac_hh:
     print(f"По запросу найдено {len_list_1} вакансий")
 else:
     print("Ничего не найдено")
 
-#Фильтр по ЗП
+# Фильтр по ЗП
+#salary = input("Какой минимальный порог по ЗП?\n")
+salary = 60000
+
+min_salary = utils.filter_vacancies(salary)  # Сортируем
+len_list_2 = utils.len_vacancies()
+#print(min_salary)
+print(f"По запросу найдено {len_list_2} вакансий")
+
+
+print("По умолчанию сортировка по дате")
+sorted = input("""Можно выбрать сортировку 
+    1 - по дате (реверсивную)
+    2 - Сортировка по ЗП от Мах -> Мин
+    3 - Сортировка по ЗП от Мин -> Мах
+    """)
+
+utils1 = utils.sorted(2)
+
+
+print("Вакансии отсортированы в соответствии с вашим запросом")
+
+
+
+
+
 
 
 
