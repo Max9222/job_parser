@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 import requests
-import json
 from datetime import datetime
 
 
 
 class APIJob(ABC):
+
     @abstractmethod
     def __init__(self, keyword: str) -> None:
         self.keyword = keyword
@@ -56,11 +56,12 @@ class ApiHH(APIJob):
                 'id': i['id'],  # id вакансии
                 'name': i['name'],  # Название вакансии
                 'url': i['url'],  # Ссылка на вакансию
-                'salary_from': i['salary']['from'] if i['salary'] else None,  # Зарплата от
-                'salary_to': i['salary']['to'] if i['salary'] else None,  # Зарплата до
+                'salary_from': i['salary']['from'] if i['salary'] else 0,  # Зарплата от
+                'salary_to': i['salary']['to'] if i['salary'] else 0,  # Зарплата до
                 'requirement': i['snippet']['requirement'],  # Требования
                 'responsibility': i['snippet']['responsibility'],  # Обязанности
                 'experience': i['experience']['name'],  # Опыт
+                'date': datetime.strptime(i['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y'),
             }
             self.vacancies.append(dict_aa)
         return self.vacancies
@@ -120,118 +121,18 @@ class ApiSuperJob(APIJob):
 #############
 
 
-class Vacancy:
-    """ Класс для работы с вакансиями"""
-    def __init__(self, data: list):
-        self.data = data
 
-
-    def list_json(self):
-        lis = []
-        for i in self.data:
-            #print(i)
-
-            dict_aa = {
-                'id': i['id'],   # id вакансии
-                'name': i['name'],   # Название вакансии
-                'url': i['url'],   # Ссылка на вакансию
-                'salary_from': i['salary']['from'] if i['salary'] else None,   # Зарплата от
-                'salary_to': i['salary']['to'] if i['salary'] else None,   # Зарплата до
-                'requirement': i['snippet']['requirement'],   # Требования
-                'responsibility': i['snippet']['responsibility'],   # Обязанности
-                'experience': i['experience']['name'],   # Опыт
-                'date': datetime.strptime(i['published_at'], '%Y-%m-%dT%H:%M:%S%z').strftime('%d %B %Y'),
-            }
-            lis.append(dict_aa)
-        return lis
 
 #############
 
-class Vacancyinit:
-    def __init__(self, vacancy):
-        for i in vacancy:
-            self.id = i['id'],  # id вакансии
-            self.name = i['name'],  # Название вакансии
-            self.url = i['url'],  # Ссылка на вакансию
-            self.salary_from = i['salary']['from'] if i['salary'] else None,  # Зарплата от
-            self.salary_to = i['salary']['to'] if i['salary'] else None,  # Зарплата до
-            self.req = i['snippet']['requirement'],  # Требования
-            self.resp = i['snippet']['responsibility'],  # Обязанности
-            self.exp = i['experience']['name'],  # Опыт
-            #self.currency = i['currency'] if None else None
-            #self.currency_value = i['currency_value']
-            self.employer = i['employer']
-            #self.title = i['title']
-
-
-    def __str__(self):
-        if not self.salary_from and not self.salary_to:
-            salary = " Отсутствует"
-        else:
-            salary_from, salary_to = "", ""
-            if self.salary_from:
-                salary_from = f"от { self.salary_from} {self.currency}"
-                if self.currency != "RUR":
-                    salary_from += f"({ round(self.salary_from * self.currency_value, 2) } RUR"
-            if self.salary_to:
-                salary_to = f"до { self.salary_to } { self.currency }"
-                if self.currency != "RUR":
-                    salary_to += f" ({ round(self.salary_to * self.currency_value, 2)} RUR"
-            salary = " ".join([salary_from, salary_to]).strip()
-        return f"""
-Работодатель: \"{ self.employer }\"
-Вакансия: \"{ self.title }\"
-Зарплата: { salary }
-Ссылка: { self.url }
-        """
-#############
-
-
-class AppJson:
-
-    def __init__(self, keyword, date):
-        self.filename = f'{ keyword.title() }.json'
-        self.date = date
-
-    def write_json(self):
-        with open(self.filename, 'w', encoding='utf-8') as outfile:
-            json.dump(self.date, outfile, indent=4)
-
-
-    def read_json(self):
-        with open(self.filename, 'r', encoding="utf-8") as infile:
-            vacancies = json.load(infile)
-        return vacancies
 
 #############
 
-class Utils:
-    """ Утилиты"""
-    def __init__(self, data):
-        self.data = data
 
 
-    def len_vacancies(self):
-        return len(self.data)
 
-    def filter_vacancies(self, salary):
-        result = []
-        for i in self.data:
-            if i['salary_to'] != None:
-                salary_int = i['salary_to']
-                if salary_int > int(salary):
-                    result.append(i)
-        self.data = result
+#############
 
-    def sorted(self, key=0):
-        if key == '1':
-            self.data = sorted(self.data, key=lambda x: datetime.strptime(x['date'], '%d %B %Y'), reverse=True)
-            return self.data
-        elif key == '2':
-            self.data = sorted(self.data, key=lambda x: int(x['salary_to']))
-            return self.data
-        elif key == '3':
-            self.data = sorted(self.data, key=lambda x: int(x['salary_to']), reverse=True)
-            return self.data
+
 
 
