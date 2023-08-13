@@ -1,6 +1,6 @@
-from src.api_job import ApiHH
+from src.api_job import ApiHH, ApiSuperJob
 from src.utils import Utils
-from src.vacancy import Vacancy
+
 from src.app_json import AppJson
 
 if __name__ == '__main__':
@@ -11,11 +11,16 @@ if __name__ == '__main__':
     # Для HH
     hh = ApiHH(keyword)
     vac_hh = hh.get_vacancies()
-    list_hh = hh.get_formatted(vac_hh)
+    list_hh = hh.get_formatted(vac_hh)   # подгоняем под удобрый формат
     #print(list_hh)
 
+    # Для SJ
+    sj = ApiSuperJob(keyword)
+    vac_sj = sj.get_vacancies()
+    list_sj = sj.get_formatted(vac_sj)   # подгоняем под удобрый формат
+
     # Экземпляр для записи в файл
-    list_1 = list_hh # + SuperJob
+    list_1 = list_hh + list_sj
     app_json = AppJson(keyword, list_1)
     write_json = app_json.write_json()  # Записали
     read_json = app_json.read_json()    # Прочитали
@@ -55,3 +60,5 @@ if __name__ == '__main__':
 
     print("Вакансии отсортированы в соответствии с вашим запросом")
     print("Данные в фале Python.json")
+
+
