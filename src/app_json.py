@@ -11,7 +11,6 @@ class AppJson:
         with open(self.filename, 'w', encoding='utf-8') as outfile:
             json.dump(self.date, outfile, indent=4)
 
-
     def read_json(self):
         with open(self.filename, 'r', encoding="utf-8") as infile:
             vacancies = json.load(infile)

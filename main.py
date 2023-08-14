@@ -1,7 +1,8 @@
 from src.api_job import ApiHH, ApiSuperJob
 from src.utils import Utils
-
+from src.vacancy import Vacancy
 from src.app_json import AppJson
+import json
 
 if __name__ == '__main__':
     print()
@@ -35,12 +36,12 @@ if __name__ == '__main__':
 
     yes_no = input("""Хочешь узнать сколько мы нашли вакансий?
     yes - Конечно хочу =)
-    no - Нет мне не интересно!!!
+    любую букву - Нет мне не интересно!!!
     : """)
 
     if yes_no.lower() == 'yes':
         if vac_hh:
-            print(f"По запросу найдено {len_list_1} вакансий")
+            print(f"По запросу найдено {len_list_1} вакансий.")
         else:
             print("Ничего не найдено")
     else:
@@ -55,23 +56,29 @@ if __name__ == '__main__':
     min_salary = utils.filter_vacancies(salary)
     len_list_2 = utils.len_vacancies()
     # print(min_salary)
-    print(f"По запросу найдено {len_list_2} вакансий")
+    print(f"По запросу найдено {len_list_2} вакансий.")
     print()
 
-    print("По умолчанию сортировка по дате")
-    sorted = input("""Можно выбрать сортировку 
+    print("По умолчанию сортировка по дате.")
+    sorted = input("""Можно выбрать сортировку: 
     1 - по дате (реверсивную)
     2 - Сортировка по ЗП от Мах -> Мин
     3 - Сортировка по ЗП от Мин -> Мах
-    : """)
-    utils_1 = Utils(read_json) # Читаем файл
+  : """)
+    #utils_1 = Utils(read_json) # Читаем файл
 
-    sort = utils_1.sorted(sorted)
+    sort = utils.sorted(sorted)
     app2 = AppJson(keyword, sort)   # Сортируем
     write = app2.write_json()   # Записываем
     print()
 
     print("Вакансии отсортированы в соответствии с вашим запросом")
     print(f"Данными можно воспользоваться, они в этом файле --> {keyword}.json")
+    print()
+    print("Вот вам ТОП - 1")
 
+    vacancy_dict = app2.date
+    vacancy = Vacancy(vacancy_dict)
 
+    # Прочитали Json
+    print(f"Название вакансии: {vacancy.name}\nЗарплата от: {vacancy.salary_to}\nСсылка на вакансию: {vacancy.url}\nid вакансии: {vacancy.id}")
