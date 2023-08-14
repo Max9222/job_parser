@@ -4,10 +4,13 @@ from src.utils import Utils
 from src.app_json import AppJson
 
 if __name__ == '__main__':
-    vac_json = []
-    #keyword = input("Какая вакансия?\n")
-    keyword = "Python"
+    print()
+    print("Привет мой друг, данный программный модуль поможет тебе с поиском работы.")
+    print()
+    print("Для начала определись с вакансией")
+    keyword = input("Какой твой выбор?\n: ")
 
+    print()
     # Для HH
     hh = ApiHH(keyword)
     vac_hh = hh.get_vacancies()
@@ -30,35 +33,45 @@ if __name__ == '__main__':
     utils = Utils(read_json)
     len_list_1 = utils.len_vacancies()  # Считаем кол-во запросса в файле Python.json
 
-    if vac_hh:
-        print(f"По запросу найдено {len_list_1} вакансий")
+    yes_no = input("""Хочешь узнать сколько мы нашли вакансий?
+    yes - Конечно хочу =)
+    no - Нет мне не интересно!!!
+    : """)
+
+    if yes_no.lower() == 'yes':
+        if vac_hh:
+            print(f"По запросу найдено {len_list_1} вакансий")
+        else:
+            print("Ничего не найдено")
     else:
-        print("Ничего не найдено")
-
+        pass
+    print()
     # Фильтр по ЗП
-    #salary = input("Какой минимальный порог по ЗП?\n")
-    salary = 60000
 
-    min_salary = utils.filter_vacancies(salary)  # Сортируем
+    print("Следующий шаг ---")
+    salary = input("Какой минимальный порог по ЗП?\n: ")
+
+    # Сортируем
+    min_salary = utils.filter_vacancies(salary)
     len_list_2 = utils.len_vacancies()
-    #print(min_salary)
+    # print(min_salary)
     print(f"По запросу найдено {len_list_2} вакансий")
-
+    print()
 
     print("По умолчанию сортировка по дате")
     sorted = input("""Можно выбрать сортировку 
     1 - по дате (реверсивную)
     2 - Сортировка по ЗП от Мах -> Мин
     3 - Сортировка по ЗП от Мин -> Мах
-    """)
-    utils_1 = Utils(read_json) #Читаем файл
-    #print(utils_1.data)
+    : """)
+    utils_1 = Utils(read_json) # Читаем файл
+
     sort = utils_1.sorted(sorted)
     app2 = AppJson(keyword, sort)   # Сортируем
     write = app2.write_json()   # Записываем
-
+    print()
 
     print("Вакансии отсортированы в соответствии с вашим запросом")
-    print("Данные в фале Python.json")
+    print(f"Данными можно воспользоваться, они в этом файле --> {keyword}.json")
 
 
